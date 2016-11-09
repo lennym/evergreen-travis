@@ -1,0 +1,30 @@
+{
+  "name": "evergreen-travis",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "bl": "^1.1.2",
+    "bluebird": "^3.4.6",
+    "env2": "^2.1.1",
+    "github": "^6.0.4",
+    "js-yaml": "^3.6.1"
+  },
+  "devDependencies": {
+    "lambda-bundler": "^1.0.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "lambda-bundler --env .env --envfile"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lennym/evergreen-travis.git"
+  },
+  "author": "Leonard Martin <hello@lennym.co.uk>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lennym/evergreen-travis/issues"
+  },
+  "homepage": "https://github.com/lennym/evergreen-travis#readme"
+}
