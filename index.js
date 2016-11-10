@@ -3,7 +3,8 @@ require('env2')('.env');
 const Promise = require('bluebird');
 
 const read = require('./lib/read-yaml');
-const check = require('./lib/check-versions');
+const checkVersions = require('./lib/check-versions');
+const checkOpenPRs = require('./lib/check-open-pull-requests');
 const fork = require('./lib/fork-repo');
 const commit = require('./lib/make-commit');
 const pr = require('./lib/pull-request');
@@ -19,19 +20,35 @@ function lambda (event, context, callback) {
     .then((yaml) => {
       return Promise.resolve()
         .then(() => {
-          return check(versions, yaml.node_js);
+          return checkVersions(versions, yaml.node_js)
+            .then((hasVersions) => {
+              if (hasVersions) {
+                throw new Error('VERSION_MATCH');
+              }
+            });
         })
-        .then((hasVersions) => {
-          if (!hasVersions) {
-            return fork(repo)
-              .then((forkedRepo) => {
-                return commit(forkedRepo, yaml, versions);
-              })
-              .then((commit) => {
-                return pr(repo, commit.ref);
-              });
-          }
+        .then(() => {
+          return checkOpenPRs(repo)
+            .then((hasOpenPR) => {
+              if (hasOpenPR) {
+                throw new Error('OPEN_PR');
+              }
+            });
+        })
+        .then(() => {
+          return fork(repo)
+        })
+        .then((forkedRepo) => {
+          return commit(forkedRepo, yaml, versions);
+        })
+        .then((commit) => {
+          return pr(repo, commit.ref);
         });
+    })
+    .catch((e) => {
+      if (e.message !== 'OPEN_PR' && e.message !== 'VERSION_MATCH') {
+        throw e;
+      }
     })
     .then(() => callback())
     .catch(callback);
