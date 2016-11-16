@@ -13,6 +13,8 @@ function lambda (event, context, callback) {
   const versions = event.versions || [4, 5, 6, 7];
   const repo = event.repo;
 
+  console.log('Received event', repo);
+
   return Promise.resolve()
     .then(() => {
       return read(repo);
@@ -23,6 +25,7 @@ function lambda (event, context, callback) {
           return checkVersions(versions, yaml.node_js)
             .then((hasVersions) => {
               if (hasVersions) {
+                console.log(`Repo ${repo} already contains versions: ${versions.join()}`);
                 throw new Error('VERSION_MATCH');
               }
             });
@@ -31,6 +34,7 @@ function lambda (event, context, callback) {
           return checkOpenPRs(repo)
             .then((hasOpenPR) => {
               if (hasOpenPR) {
+                console.log(`Repo ${repo} already has an open PR`);
                 throw new Error('OPEN_PR');
               }
             });
