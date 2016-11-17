@@ -50,7 +50,7 @@ function lambda (event, context, callback) {
         });
     })
     .catch((e) => {
-      if (e.message !== 'OPEN_PR' && e.message !== 'VERSION_MATCH') {
+      if (e.message !== 'NO_TRAVIS_YML' && e.message !== 'OPEN_PR' && e.message !== 'VERSION_MATCH') {
         throw e;
       }
     })
