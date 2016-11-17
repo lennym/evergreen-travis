@@ -50,7 +50,8 @@ function lambda (event, context, callback) {
         });
     })
     .catch((e) => {
-      if (e.message !== 'NO_TRAVIS_YML' && e.message !== 'OPEN_PR' && e.message !== 'VERSION_MATCH') {
+      const nonFatal = ['NOT_NODE', 'NO_TRAVIS_YML', 'OPEN_PR', 'VERSION_MATCH'];
+      if (nonFatal.indexOf(e.message) === -1) {
         throw e;
       }
     })
