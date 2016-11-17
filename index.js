@@ -40,7 +40,7 @@ function lambda (event, context, callback) {
             });
         })
         .then(() => {
-          return fork(repo)
+          return fork(repo);
         })
         .then((forkedRepo) => {
           return commit(forkedRepo, yaml, versions);
