@@ -31,11 +31,18 @@ describe('version matcher', () => {
       .then(val => assert.equal(val, true));
   });
 
-  it('ignores missing versions which are older than other configured versions', () => {
+  it('ignores missing versions which are older than other numerically configured versions', () => {
     const expected = [4, 5, 6, 7];
     const actual = [4, 6, 7];
     return versions(expected, actual, {})
       .then(val => assert.equal(val, true));
+  });
+
+  it('does not ignore missing versions which are older than only aliased versions', () => {
+    const expected = [4, 5, 6, 7];
+    const actual = [4, 'node'];
+    return versions(expected, actual, { 'node': 7 })
+      .then(val => assert.equal(val, false));
   });
 
 });
@@ -48,10 +55,22 @@ describe('version updater', () => {
     assert.deepEqual(update(existing, updated, {}), ['4', '6', '7']);
   });
 
+  it('adds missing versions which are older than only aliased versions', () => {
+    const updated = [4, 5, 6, 7];
+    const existing = [4, 'lts/*', 'node'];
+    assert.deepEqual(update(existing, updated, { node: 7, 'lts/*': 6 }), ['4', '5', 'lts/*', 'node']);
+  });
+
   it('preserves aliases in configured versions', () => {
     const updated = [4, 5, 6, 7];
     const existing = ['lts/argon', 5, 'lts/boron'];
     assert.deepEqual(update(existing, updated, { 'lts/argon': 4, 'lts/boron': 6 }), ['lts/argon', '5', 'lts/boron', '7']);
+  });
+
+  it('preserves unaliased strings in configured versions', () => {
+    const updated = [4, 5, 6, 7];
+    const existing = ['lts/argon', 5, 'lts/boron', 'iojs'];
+    assert.deepEqual(update(existing, updated, { 'lts/argon': 4, 'lts/boron': 6 }), ['lts/argon', '5', 'lts/boron', '7', 'iojs']);
   });
 
 });
