@@ -16,7 +16,7 @@
   },
   "scripts": {
     "test": "mocha ./test --recursive",
-    "deploy": "lambda-bundler --env .env --envfile"
+    "deploy": "npm test && lambda-bundler --env .env --envfile"
   },
   "repository": {
     "type": "git",
