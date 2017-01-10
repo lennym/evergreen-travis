@@ -11,6 +11,7 @@ const pr = require('./lib/pull-request');
 
 function lambda (event, context, callback) {
   const versions = event.versions || [4, 5, 6, 7];
+  const aliases = event.aliases || {};
   const repo = event.repo;
 
   console.log('Received event', repo);
@@ -22,7 +23,7 @@ function lambda (event, context, callback) {
     .then((yaml) => {
       return Promise.resolve()
         .then(() => {
-          return checkVersions(versions, yaml.node_js)
+          return checkVersions(versions, yaml.node_js, aliases)
             .then((hasVersions) => {
               if (hasVersions) {
                 console.log(`Repo ${repo} already contains versions: ${versions.join()}`);
@@ -43,7 +44,7 @@ function lambda (event, context, callback) {
           return fork(repo);
         })
         .then((forkedRepo) => {
-          return commit(forkedRepo, yaml, versions);
+          return commit(forkedRepo, yaml, versions, aliases);
         })
         .then((commit) => {
           return pr(repo, commit.ref);

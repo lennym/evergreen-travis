@@ -11,10 +11,11 @@
     "js-yaml": "^3.6.1"
   },
   "devDependencies": {
-    "lambda-bundler": "^1.0.1"
+    "lambda-bundler": "^1.0.1",
+    "mocha": "^3.2.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha ./test --recursive",
     "deploy": "lambda-bundler --env .env --envfile"
   },
   "repository": {
