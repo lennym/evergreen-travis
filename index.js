@@ -21,6 +21,7 @@ function lambda (event, context, callback) {
       return read(repo);
     })
     .then((yaml) => {
+      console.log('Got yaml', repo);
       return Promise.resolve()
         .then(() => {
           return checkVersions(versions, yaml.node_js, aliases)
@@ -32,6 +33,7 @@ function lambda (event, context, callback) {
             });
         })
         .then(() => {
+          console.log('Checked versions', repo);
           return checkOpenPRs(repo)
             .then((hasOpenPR) => {
               if (hasOpenPR) {
@@ -41,22 +43,29 @@ function lambda (event, context, callback) {
             });
         })
         .then(() => {
+          console.log('Checked open PR', repo);
           return fork(repo);
         })
         .then((forkedRepo) => {
+          console.log('Forked', repo);
           return commit(forkedRepo, yaml, versions, aliases);
         })
         .then((commit) => {
+          console.log('Commited', repo);
           return pr(repo, commit.ref);
         });
     })
     .catch((e) => {
+      console.log('ERROR>>>', e.message);
       const nonFatal = ['NOT_NODE', 'NO_TRAVIS_YML', 'OPEN_PR', 'VERSION_MATCH'];
       if (nonFatal.indexOf(e.message) === -1) {
         throw e;
       }
     })
-    .then(() => callback())
+    .then(() => {
+      console.log('Opened PR', repo);
+      callback();
+    })
     .catch(callback);
 }
 
