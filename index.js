@@ -53,6 +53,9 @@ function lambda (event, context, callback) {
         .then((commit) => {
           console.log('Commited', repo);
           return pr(repo, commit.ref);
+        })
+        .then(() => {
+          console.log('Opened PR', repo);
         });
     })
     .catch((e) => {
@@ -63,7 +66,6 @@ function lambda (event, context, callback) {
       }
     })
     .then(() => {
-      console.log('Opened PR', repo);
       callback();
     })
     .catch(callback);
