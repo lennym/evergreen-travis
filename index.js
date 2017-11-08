@@ -10,7 +10,7 @@ const commit = require('./lib/make-commit');
 const pr = require('./lib/pull-request');
 
 function lambda (event, context, callback) {
-  const versions = event.versions || [4, 5, 6, 7];
+  const versions = event.versions || [];
   const aliases = event.aliases || {};
   const repo = event.repo;
 
@@ -21,7 +21,7 @@ function lambda (event, context, callback) {
       return read(repo);
     })
     .then((yaml) => {
-      console.log('Got yaml', repo);
+      console.log('Got yaml', repo, yaml);
       return Promise.resolve()
         .then(() => {
           return checkVersions(versions, yaml.node_js, aliases)
